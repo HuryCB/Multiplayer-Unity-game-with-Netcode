@@ -58,3 +58,6 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+#paralelsync Cloned project
+*_clone_[0-9]*/
+
