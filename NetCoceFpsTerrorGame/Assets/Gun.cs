@@ -23,10 +23,11 @@ public class Gun : NetworkBehaviour
         //     Destroy(this);
         // }
     }
-    
+
     void Start()
     {
-        if(!IsOwner){
+        if (!IsOwner)
+        {
             return;
         }
         shotSound = GetComponent<AudioSource>();
@@ -36,7 +37,8 @@ public class Gun : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!IsOwner){
+        if (!IsOwner)
+        {
             return;
         }
         if (lastTimeShot < reloadTime)
@@ -47,20 +49,65 @@ public class Gun : NetworkBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
-                fire();
+                shotSound.Play();
+                // if (IsServer)
+                // {
+                //     Debug.Log("is server trying to fire");
+                //     fire();
+                // }
+                // else
+                // {
+                Debug.Log("else trying to fire");
+                fireServerRpc(shotPoint.position, shotPoint.rotation);
+                lastTimeShot = 0;
+                // }
             }
         }
-        
-        
+
+
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void fireServerRpc(Vector3 position, Quaternion rotation)
+    {
+        // Debug.Log("serverRpc");
+        // fire();
+
+        Debug.Log("actually trying to fire");
+        // if (!IsOwner)
+        // {
+        //     return;
+        // }
+        Debug.Log("actually firing");
+        // Debug.Log(shotSound);
+        Debug.Log(bulletPrefab);
+        // Debug.Log(shotPoint);
+        // Debug.Log(shotPoint.position);
+        // Debug.Log(shotPoint.rotation);
+
+        GameObject go = Instantiate(bulletPrefab, position, rotation);
+        // GameObject go = Instantiate(bulletPrefab);
+        go.GetComponent<NetworkObject>().Spawn();
+
     }
 
     private void fire()
     {
-        if(!IsOwner){
-            return;
-        }
-        shotSound.Play();
-        Instantiate(bulletPrefab, shotPoint.position, shotPoint.rotation);
+        Debug.Log("actually trying to fire");
+        // if (!IsOwner)
+        // {
+        //     return;
+        // }
+        Debug.Log("actually firing");
+        // Debug.Log(shotSound);
+        Debug.Log(bulletPrefab);
+        // Debug.Log(shotPoint);
+        // Debug.Log(shotPoint.position);
+        // Debug.Log(shotPoint.rotation);
+
+        // GameObject go = Instantiate(bulletPrefab, shotPoint.position, shotPoint.rotation);
+        GameObject go = Instantiate(bulletPrefab);
+        go.GetComponent<NetworkObject>().Spawn();
         lastTimeShot = 0;
 
     }

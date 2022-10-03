@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class Bullet : MonoBehaviour
+public class Bullet : NetworkBehaviour
 {
     // Start is called before the first frame update
     float horizontal;
@@ -12,6 +13,10 @@ public class Bullet : MonoBehaviour
     Rigidbody2D rb;
     public float speed = 40f;
     public float lifeTime = 5f;
+
+    private readonly NetworkVariable<Vector3> netPos = new(writePerm: NetworkVariableWritePermission.Owner);
+    private readonly NetworkVariable<Quaternion> netRotation = new(writePerm: NetworkVariableWritePermission.Owner);
+
 
     void Start()
     {
@@ -28,9 +33,24 @@ public class Bullet : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            if(IsServer){
+                Destroy(this.gameObject);
+            }
+            // DestroyServerRpc();
+            // Destroy(t)
+            return;
         }
         transform.Translate(Vector2.down * speed * Time.deltaTime);
+        if (IsOwner)
+        {
+            netPos.Value = transform.position;
+            netRotation.Value = transform.rotation;
+        }
+        else
+        {
+            transform.position = netPos.Value;
+            transform.rotation = netRotation.Value;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D hitInfo)
@@ -43,7 +63,9 @@ public class Bullet : MonoBehaviour
         if (hitInfo.tag == "enemy")
         {
             hitInfo.GetComponent<Enemy>().damage();
-            Destroy(gameObject);
+             if(IsServer){
+                Destroy(this.gameObject);
+            }
         }
     }
 
@@ -51,12 +73,21 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.tag != "activateBox")
         {
-            
+
         }
 
-        if(collision.gameObject.CompareTag("enemy")){
+        if (collision.gameObject.CompareTag("enemy"))
+        {
             collision.gameObject.GetComponent<Enemy>().damage();
-            Destroy(gameObject);
+            if(IsServer){
+                Destroy(this.gameObject);
+            }
         }
     }
+
+    // [ServerRpc(RequireOwnership = false)]
+    // void DestroyServerRpc()
+    // {
+    //     Destroy(this.gameObject);
+    // }
 }
