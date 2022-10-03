@@ -7,7 +7,9 @@ public class Enemy : MonoBehaviour
     AudioSource basicSound;
     public GameObject blood;
     private GameObject Player;
-    
+
+    public GameObject player;
+
     public float speed = 1.5f;
     // Start is called before the first frame update
     void Start()
@@ -19,12 +21,16 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // transform.position = Vector2.MoveTowards(transform.position, Player.transform.position, speed * Time.deltaTime);
+        if (player != null)
+        {
+
+            transform.position = Vector2.MoveTowards(transform.position, player.transform.position, speed * Time.deltaTime);
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.tag == "activateBox")
+        if (collision.tag == "activateBox")
         {
             if (!basicSound.isPlaying)
             {
@@ -35,10 +41,10 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.tag == "bullet")
+        if (collision.gameObject.tag == "bullet")
         {
             Debug.Log("collision");
-           
+
         }
     }
 
@@ -47,14 +53,15 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject.tag == "bullet")
         {
             Debug.Log("trigger");
-        
+
         }
     }
 
-    public void damage(){
+    public void damage()
+    {
         // Instantiate(blood, new Vector3(bulletPosition.position.x,bulletPosition.position.y,bulletPosition.position.z),Quaternion.identity);
         GameObject bloodCopy = Instantiate(blood);
         bloodCopy.transform.position = this.transform.position;
-           
+
     }
 }

@@ -110,8 +110,11 @@ public class Player : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    private void OpenDoorClientRpc(){
+    // [ClientRpc]
+    // private void OpenDoorClientRpc(){
 
-    }
+    // }
+
+   
+
 }
